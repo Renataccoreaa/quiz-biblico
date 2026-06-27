@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Bíblico - {{ livro }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Livro: {{ livro }}</h2>
+        <p class="progresso">Pergunta {{ numero }} de {{ total }}</p>
+
+        <h3>{{ pergunta.pergunta }}</h3>
+
+        <!--
+            Este formulário envia a opção escolhida (0, 1, 2 ou 3) de volta
+            para a mesma rota /pergunta, mas via POST. O app.py vai conferir
+            se a resposta está certa antes de mostrar a próxima pergunta.
+        -->
+        <form action="/pergunta" method="POST" class="lista-opcoes">
+            {% for indice in range(pergunta.opcoes|length) %}
+                <button type="submit" name="opcao" value="{{ indice }}" class="botao-opcao">
+                    {{ pergunta.opcoes[indice] }}
+                </button>
+            {% endfor %}
+        </form>
+    </div>
+</body>
+</html>

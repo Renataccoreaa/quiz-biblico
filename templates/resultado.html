@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Resultado - Quiz Bíblico</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 Quiz Finalizado!</h1>
+        <p>Livro: <strong>{{ livro }}</strong></p>
+
+        <p class="pontuacao-final">
+            Você acertou {{ pontuacao }} de {{ total }} perguntas!
+        </p>
+
+        {% if pontuacao == total %}
+            <p>Perfeito! Você conhece muito bem este livro. 🏆</p>
+        {% elif pontuacao >= total / 2 %}
+            <p>Bom trabalho! Continue estudando. 👍</p>
+        {% else %}
+            <p>Vale a pena reler este livro com mais atenção. 📚</p>
+        {% endif %}
+
+        <a href="/" class="botao-opcao botao-reiniciar">Jogar novamente</a>
+    </div>
+</body>
+</html>

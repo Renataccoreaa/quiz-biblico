@@ -1,0 +1,88 @@
+/* style.css - Estilo visual do Quiz Bíblico */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #2c3e50, #4a6491);
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 40px;
+    max-width: 480px;
+    width: 90%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+h1 {
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+h2 {
+    color: #4a6491;
+    margin-top: 0;
+}
+
+h3 {
+    color: #2c3e50;
+    margin: 24px 0;
+    font-size: 1.2rem;
+}
+
+.progresso {
+    color: #888;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.lista-livros,
+.lista-opcoes {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.botao-livro,
+.botao-opcao {
+    background: #f4f6f8;
+    border: 2px solid #dde3ea;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 1rem;
+    color: #2c3e50;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    text-decoration: none;
+}
+
+.botao-livro:hover,
+.botao-opcao:hover {
+    background: #4a6491;
+    color: #fff;
+    border-color: #4a6491;
+    transform: translateY(-2px);
+}
+
+.pontuacao-final {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 20px 0;
+}
+
+.botao-reiniciar {
+    display: inline-block;
+    margin-top: 16px;
+}
