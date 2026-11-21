@@ -1,27 +1,12 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Quiz Bíblico</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <div class="container">
-        <h1>📖 Quiz Bíblico</h1>
-        <p>Escolha um livro da Bíblia para começar o quiz!</p>
+{% extends "base.html" %}
+{% block conteudo %}
+<h1>📖 Quiz Bíblico</h1>
+<p class="subtitulo">Escolha um livro da Bíblia para começar!</p>
 
-        <!--
-            Este formulário envia (via POST) o livro escolhido para a rota /comecar.
-            Cada botão é, na verdade, um botão de "submit" diferente — usamos
-            o atributo "name=livro" e "value" para indicar qual livro foi escolhido.
-        -->
-        <form action="/comecar" method="POST" class="lista-livros">
-            {% for livro in livros %}
-                <button type="submit" name="livro" value="{{ livro }}" class="botao-livro">
-                    {{ livro }}
-                </button>
-            {% endfor %}
-        </form>
-    </div>
-</body>
-</html>
+<form action="{{ url_for('comecar') }}" method="POST" class="lista-livros">
+    <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+    {% for livro in livros %}
+        <button type="submit" name="livro" value="{{ livro }}" class="botao-livro">{{ livro }}</button>
+    {% endfor %}
+</form>
+{% endblock %}

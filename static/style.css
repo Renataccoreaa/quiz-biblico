@@ -1,50 +1,54 @@
 /* style.css - Estilo visual do Quiz Bíblico */
 
-* {
-    box-sizing: border-box;
+:root {
+    --azul-escuro: #2c3e50;
+    --azul: #4a6491;
+    --dourado: #c9a227;
+    --verde: #2e9e5b;
+    --vermelho: #d64545;
 }
 
+* { box-sizing: border-box; }
+
 body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: linear-gradient(135deg, #2c3e50, #4a6491);
+    font-family: 'Segoe UI', system-ui, Arial, sans-serif;
+    background: linear-gradient(135deg, var(--azul-escuro), var(--azul));
+    background-attachment: fixed;
     min-height: 100vh;
     margin: 0;
+    padding: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .container {
-    background: #ffffff;
+    background: #fff;
     border-radius: 16px;
-    padding: 40px;
-    max-width: 480px;
-    width: 90%;
+    border-top: 6px solid var(--dourado);
+    padding: 40px 32px;
+    max-width: 520px;
+    width: 100%;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     text-align: center;
+    animation: entrada 0.3s ease-out;
 }
 
-h1 {
-    color: #2c3e50;
-    margin-bottom: 8px;
+@keyframes entrada {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
 }
 
-h2 {
-    color: #4a6491;
-    margin-top: 0;
-}
+h1 { color: var(--azul-escuro); margin: 0 0 8px; }
+h2 { color: var(--azul); margin: 0; }
+h3 { color: var(--azul-escuro); margin: 20px 0; font-size: 1.2rem; line-height: 1.4; }
 
-h3 {
-    color: #2c3e50;
-    margin: 24px 0;
-    font-size: 1.2rem;
-}
+.subtitulo { color: #666; }
 
-.progresso {
-    color: #888;
-    font-weight: bold;
-    font-size: 0.9rem;
-}
+.progresso { color: #777; font-weight: bold; font-size: 0.9rem; margin: 6px 0 10px; }
+
+.barra { height: 8px; background: #e6eaf0; border-radius: 99px; overflow: hidden; }
+.barra-preenchida { height: 100%; background: var(--dourado); transition: width 0.3s; }
 
 .lista-livros,
 .lista-opcoes {
@@ -56,33 +60,51 @@ h3 {
 
 .botao-livro,
 .botao-opcao {
+    display: block;
+    width: 100%;
     background: #f4f6f8;
     border: 2px solid #dde3ea;
     border-radius: 10px;
     padding: 14px;
-    font-size: 1rem;
-    color: #2c3e50;
+    font: inherit;
+    color: var(--azul-escuro);
     cursor: pointer;
     transition: all 0.15s ease-in-out;
     text-decoration: none;
 }
 
 .botao-livro:hover,
-.botao-opcao:hover {
-    background: #4a6491;
+.botao-opcao:hover,
+.botao-livro:focus-visible,
+.botao-opcao:focus-visible {
+    background: var(--azul);
     color: #fff;
-    border-color: #4a6491;
+    border-color: var(--azul);
     transform: translateY(-2px);
+    outline: none;
 }
 
-.pontuacao-final {
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: #2c3e50;
-    margin: 20px 0;
+/* Estados de feedback (não clicáveis) */
+div.botao-opcao { cursor: default; }
+div.botao-opcao:hover { transform: none; background: #f4f6f8; color: var(--azul-escuro); border-color: #dde3ea; }
+div.botao-opcao.neutra { opacity: 0.6; }
+div.botao-opcao.correta, div.botao-opcao.correta:hover { background: var(--verde); border-color: var(--verde); color: #fff; }
+div.botao-opcao.errada,  div.botao-opcao.errada:hover  { background: var(--vermelho); border-color: var(--vermelho); color: #fff; }
+
+.mensagem { font-weight: bold; margin: 18px 0 14px; }
+.mensagem.acerto { color: var(--verde); }
+.mensagem.erro { color: var(--vermelho); }
+
+.botao-principal { background: var(--azul-escuro); color: #fff; border-color: var(--azul-escuro); font-weight: 600; }
+
+.pontuacao-final { font-size: 1.4rem; font-weight: bold; color: var(--azul-escuro); margin: 20px 0; }
+
+.botao-reiniciar { display: inline-block; width: auto; padding: 14px 28px; margin-top: 16px; }
+
+@media (max-width: 480px) {
+    .container { padding: 28px 18px; }
 }
 
-.botao-reiniciar {
-    display: inline-block;
-    margin-top: 16px;
+@media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
 }

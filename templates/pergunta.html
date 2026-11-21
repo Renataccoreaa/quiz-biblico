@@ -1,29 +1,36 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Quiz Bíblico - {{ livro }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <div class="container">
-        <h2>Livro: {{ livro }}</h2>
-        <p class="progresso">Pergunta {{ numero }} de {{ total }}</p>
+{% extends "base.html" %}
+{% block titulo %}Quiz Bíblico - {{ livro }}{% endblock %}
+{% block conteudo %}
+<h2>{{ livro }}</h2>
+<p class="progresso">Pergunta {{ numero }} de {{ total }}</p>
+<div class="barra" role="progressbar" aria-valuenow="{{ progresso }}" aria-valuemin="0" aria-valuemax="100">
+    <div class="barra-preenchida" style="width: {{ progresso }}%"></div>
+</div>
 
-        <h3>{{ pergunta.pergunta }}</h3>
+<h3>{{ pergunta }}</h3>
 
-        <!--
-            Este formulário envia a opção escolhida (0, 1, 2 ou 3) de volta
-            para a mesma rota /pergunta, mas via POST. O app.py vai conferir
-            se a resposta está certa antes de mostrar a próxima pergunta.
-        -->
-        <form action="/pergunta" method="POST" class="lista-opcoes">
-            {% for indice in range(pergunta.opcoes|length) %}
-                <button type="submit" name="opcao" value="{{ indice }}" class="botao-opcao">
-                    {{ pergunta.opcoes[indice] }}
-                </button>
-            {% endfor %}
-        </form>
+{% if feedback %}
+    <div class="lista-opcoes">
+        {% for texto in opcoes %}
+            {% set classe = 'correta' if loop.index0 == feedback.correta else ('errada' if loop.index0 == feedback.escolhida else 'neutra') %}
+            <div class="botao-opcao {{ classe }}">{{ texto }}</div>
+        {% endfor %}
     </div>
-</body>
-</html>
+    <p class="mensagem {{ 'acerto' if feedback.escolhida == feedback.correta else 'erro' }}">
+        {% if feedback.escolhida == feedback.correta %}✅ Resposta correta!{% else %}❌ Não foi dessa vez.{% endif %}
+    </p>
+    <form action="{{ url_for('proxima') }}" method="POST">
+        <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+        <button type="submit" class="botao-opcao botao-principal">
+            {{ 'Ver resultado' if numero == total else 'Próxima pergunta' }}
+        </button>
+    </form>
+{% else %}
+    <form action="{{ url_for('responder') }}" method="POST" class="lista-opcoes">
+        <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+        {% for texto in opcoes %}
+            <button type="submit" name="opcao" value="{{ loop.index0 }}" class="botao-opcao">{{ texto }}</button>
+        {% endfor %}
+    </form>
+{% endif %}
+{% endblock %}
