@@ -3,10 +3,15 @@
 <h1>📖 Quiz Bíblico</h1>
 <p class="subtitulo">Escolha um livro da Bíblia para começar!</p>
 
-<form action="{{ url_for('comecar') }}" method="POST" class="lista-livros">
+<form action="{{ url_for('comecar') }}" method="POST">
     <input type="hidden" name="csrf" value="{{ csrf_token() }}">
-    {% for livro in livros %}
-        <button type="submit" name="livro" value="{{ livro }}" class="botao-livro">{{ livro }}</button>
+    {% for titulo, livros in grupos %}
+        <h2 class="grupo">{{ titulo }}</h2>
+        <div class="grade-livros">
+            {% for livro in livros %}
+                <button type="submit" name="livro" value="{{ livro }}" class="botao-livro">{{ livro }}</button>
+            {% endfor %}
+        </div>
     {% endfor %}
 </form>
 {% endblock %}

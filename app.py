@@ -10,7 +10,7 @@ from flask import (
     Flask, abort, redirect, render_template, request, session, url_for,
 )
 
-from perguntas import BANCO_DE_PERGUNTAS
+from perguntas import BANCO_DE_PERGUNTAS, GRUPOS
 
 load_dotenv()  # lê o arquivo .env (se existir) para variáveis de ambiente
 
@@ -79,7 +79,7 @@ def _quiz_ativo():
 
 @app.route("/")
 def inicio():
-    return render_template("inicio.html", livros=list(BANCO_DE_PERGUNTAS))
+    return render_template("inicio.html", grupos=GRUPOS)
 
 
 @app.route("/comecar", methods=["POST"])
@@ -89,14 +89,33 @@ def comecar():
         abort(400)
 
     total = len(BANCO_DE_PERGUNTAS[livro])
-    ids = random.sample(range(total), min(NUMERO_DE_PERGUNTAS, total))
+    quantidade = min(NUMERO_DE_PERGUNTAS, total)
 
-    # Guardamos só os ÍNDICES das perguntas: o cookie de sessão é legível
-    # pelo usuário, então nunca colocamos nele as respostas corretas.
+    # Evita repetir perguntas entre partidas: lembramos quais já saíram
+    # para este livro e sorteamos primeiro entre as inéditas.
+    vistas_por_livro = session.get("vistas", {})
+    vistas = [i for i in vistas_por_livro.get(livro, []) if i < total]
+    inéditas = [i for i in range(total) if i not in vistas]
+    if len(inéditas) >= quantidade:
+        ids = random.sample(inéditas, quantidade)
+        vistas += ids
+    else:  # acabaram as inéditas: completa com antigas e recomeça o ciclo
+        antigas = [i for i in range(total) if i in vistas]
+        ids = inéditas + random.sample(antigas, quantidade - len(inéditas))
+        vistas = list(ids)
+    vistas_por_livro.pop(livro, None)
+    vistas_por_livro[livro] = vistas
+    # mantém o cookie pequeno: só os 12 livros mais recentes
+    vistas_por_livro = dict(list(vistas_por_livro.items())[-12:])
+
+    # Embaralha a ordem das alternativas de cada pergunta (só guardamos
+    # índices; as respostas corretas nunca vão para o cookie).
+    ordens = [random.sample(range(4), 4) for _ in ids]
+
     csrf = _token_csrf()
     session.clear()
-    session.update(csrf=csrf, livro=livro, ids=ids, atual=0, pontos=0,
-                   feedback=None)
+    session.update(csrf=csrf, livro=livro, ids=ids, ordens=ordens, atual=0,
+                   pontos=0, feedback=None, vistas=vistas_por_livro)
     return redirect(url_for("pergunta"))
 
 
@@ -111,10 +130,11 @@ def pergunta():
 
     livro = session["livro"]
     dados = BANCO_DE_PERGUNTAS[livro][ids[atual]]
+    ordem = session["ordens"][atual]
     return render_template(
         "pergunta.html",
         pergunta=dados["pergunta"],
-        opcoes=dados["opcoes"],
+        opcoes=[dados["opcoes"][j] for j in ordem],
         numero=atual + 1,
         total=len(ids),
         livro=livro,
@@ -138,10 +158,12 @@ def responder():
         abort(400)
 
     dados = BANCO_DE_PERGUNTAS[session["livro"]][ids[atual]]
-    if not 0 <= escolhida < len(dados["opcoes"]):
+    ordem = session["ordens"][atual]
+    if not 0 <= escolhida < len(ordem):
         abort(400)
 
-    correta = dados["resposta_correta"]
+    # posição da alternativa correta depois do embaralhamento
+    correta = ordem.index(dados["resposta_correta"])
     if escolhida == correta:
         session["pontos"] += 1
     session["feedback"] = {"escolhida": escolhida, "correta": correta}
